@@ -1,0 +1,83 @@
+function [rmsarray,Arange,rrange,ropt]=specTradeoff(wht)
+
+
+  rsteps = 200;
+  Asteps = 200;
+  
+  Ltap = 8;
+  THspec = 20;
+  rotcoord = [200,159];
+  rplanet = 3393.5;
+  Lmax = 134;
+  rstart = 1000;
+  
+  folder = fullfile('GMTdata','examples');
+  
+  switch wht
+
+    case 1
+      % Mars sat alt 30% selection
+      
+      name = 'manysynth_MarsNew_noise10pc_alt';
+      lrng = 9:85;
+      
+      load([name,'.mat']);
+
+      rdev = 0.01;
+      Adev = 0.7;
+      
+
+    case 2
+      % Mars surface 30% selection
+      
+      name = 'manysynth_MarsNew_surface_noise10p_alt';
+      lrng = Ltap+1:Lmax-Ltap;     
+      
+      load([name,'.mat']);
+
+      rdev = 0.01;
+      Adev = 0.7;
+
+  end
+  
+  %meancoef = median(cell2mat(coef),2);
+  whichindex = 1
+  invspecML = localspectrum(coef2lmcosi(coef{whichindex}/sqrt(4*pi)),Ltap,THspec,[],rotcoord,[],[],2,rplanet);
+
+  ropt =  findDepthMinDiff_SRD(invspecML,lrng,rplanet,rplanet,rstart,Ltap,Lmax);
+  fitspec = SRD(ropt,rplanet,rplanet,Lmax,Ltap);
+  Aopt =  bestA(fitspec(lrng+1),invspecML(lrng+1));
+
+  % keyboard
+
+  rrange = linspace(ropt-rdev*ropt, ropt+rdev*ropt, rsteps);
+  Arange = linspace(Aopt-Adev*Aopt, Aopt+Adev*Aopt, Asteps);
+
+  rmsarray = zeros(rsteps,Asteps);
+  ls = min(lrng):max(lrng);
+
+   
+
+%keyboard
+  
+  parfor i = 1:rsteps
+    for j = 1:Asteps
+
+      spec = Arange(j)*SRD(rrange(i),rplanet,rplanet,Lmax,Ltap);
+      
+      rmsarray(i,j) = rms( log(spec(ls)) - log(invspecML(ls)) );
+      
+    end
+  end
+
+  try
+    %[R,A] = meshgrid(rrange,Arange);
+    %writematrix([A(:), R(:), rmsarray(:)], fullfile(folder,['rmsfit_',name,'.txt']))
+    %save(fullfile(folder,['rmsfit_',name,'.mat']), 'Arange', 'rrange', 'rmsarray')
+%%% Need to save as .grd
+    grdwrite2p(Arange, rrange, rmsarray,  fullfile(folder,['rmsfit_',name,'.grd']));
+  catch
+    keyboard
+  end
+
+        

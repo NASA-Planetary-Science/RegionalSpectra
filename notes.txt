@@ -1,0 +1,29 @@
+All works out with the new larger cap calculations.
+
+The only thing is that the resulting source depth are off by much more than a standard deviation. This is because the spectra are off by a small amount. This small amount is enough to affect the source radius by a tiny amount. I looked at it, the spectra are up to 6% different, in particular for the low degrees. They are 3% different for the high degrees. They match for perhaps degree 90.
+
+I should probably not show the source radii for the paper but only include them in the supplemental material.
+
+
+------
+
+
+Subsampling:
+------------
+whichsub=1        20% subsampling
+whichsub=2 (alt)  30% subsampling
+whichsub=3 (alt2) 10% subsampling
+
+Want to do only whichsub=2 and whichsub=3
+
+
+Procedure:
+----------
+
+1. Create synthetic data at satellite altitude with noise.
+2. Pick subselection setting (repeat remainder for several subselection settings)
+3. Find best J (sf): For each subselection realization: Run inversion for range of J
+4. For best J, run many subselection inversions to get mean model and std
+5. Get spectra, source radii
+
+
