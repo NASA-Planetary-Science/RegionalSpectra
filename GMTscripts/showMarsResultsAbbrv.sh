@@ -18,11 +18,15 @@ topo=../GMTdata/MarsTopo16ppd.grd
 topomod=../GMTdata/MarsTopoMod.grd
 topogradmod=../GMTdata/MarsTopo16ppd_gradient_model.grd
 
+# res=0.1 
+# res 0.1 makes 4.8 MB large figure.
+res=0.25
+
 # Mean
 model=../GMTdata/synthMarsNew_noise10pc_sub${1}_mean.grd
 modhi=../GMTdata/synthMarsNew_noise10pc_sub${1}_mean_hi.grd
-gmt grdsample ${topo} -G${topomod} -R${R} -I0.1 -T
-gmt grdsample ${model} -G${modhi} -R${R} -I0.1
+gmt grdsample ${topo} -G${topomod} -R${R} -I${res} -T
+gmt grdsample ${model} -G${modhi} -R${R} -I${res}
 gmt grdgradient ${topomod} -G${topogradmod}  -R${R} -A270/0/90 -Ne0.5
 gmt grd2cpt ${model} -Cvik -Z -Sh -H > colmod.cpt 
 gmt grdimage -Ccolmod.cpt ${modhi} -I${topogradmod}  -R${R} -JG200/-69/${THshow}/7c -Bxa30g30 -Bya10g10 -BNSEW
@@ -37,9 +41,11 @@ EOF
 mod1=../GMTdata/synthMarsNew_noise10pc_sub${1}_mean_hi.grd
 mod2=../GMTdata/Lang_Br_hi.grd
 CMdiff=../GMTdata/Lang_minus_synthMarsNew_noise10pc_sub${1}_mean_hi.grd
+diffhi=../GMTdata/Lang_minus_synthMarsNew_noise10pc_sub${1}_mean_hi_res.grd
 gmt grdmath ${mod2} ${mod1} SUB = ${CMdiff}
+gmt grdsample ${CMdiff} -G${diffhi} -R${R} -I${res}
 #gmt grd2cpt ${CMdiff} -Cvik -Z -Sh
-gmt grdimage -Ccolmod.cpt ${CMdiff} -I${topogradmod}  -R${R} -JG200/-69/${THshow}/7c -Bxa30g30 -Bya10g10 -BNSEW -X7.5c
+gmt grdimage -Ccolmod.cpt ${diffhi} -I${topogradmod}  -R${R} -JG200/-69/${THshow}/7c -Bxa30g30 -Bya10g10 -BNSEW -X7.5c
 gmt plot ../GMTdata/MarsRegion.txt -W${regionpen}
 gmt colorbar -DJCR+o0.5c/0c --FORMAT_FLOAT_MAP=%.0f -S+x"L134 minus mean model @[B_r@[ [nT]"
 gmt text -R0/1/0/1 -JX7c/7c --FONT=20 <<EOF

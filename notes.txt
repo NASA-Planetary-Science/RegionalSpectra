@@ -2,9 +2,6 @@ All works out with the new larger cap calculations.
 
 The only thing is that the resulting source depth are off by much more than a standard deviation. This is because the spectra are off by a small amount. This small amount is enough to affect the source radius by a tiny amount. I looked at it, the spectra are up to 6% different, in particular for the low degrees. They are 3% different for the high degrees. They match for perhaps degree 90.
 
-I should probably not show the source radii for the paper but only include them in the supplemental material.
-
-
 ------
 
 

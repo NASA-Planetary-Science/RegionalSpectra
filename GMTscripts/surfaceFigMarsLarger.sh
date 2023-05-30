@@ -19,6 +19,8 @@ gmt set MAP_POLAR_CAP none
 gmt set FONT 12p
 
 
+res=0.25
+
 minval=95.5
 maxval=98
 ##### Selecting J
@@ -64,8 +66,8 @@ topogradmod=../GMTdata/MarsTopo16ppd_gradient_model.grd
 # Mean
 model=../GMTdata/synthMarsNewLarger${str2}_mean.grd
 modhi=../GMTdata/synthMarsNewLarger${str2}_mean_hi.grd
-gmt grdsample ${topo} -G${topomod} -R${R} -I0.1 -T
-gmt grdsample ${model} -G${modhi} -R${R} -I0.1
+gmt grdsample ${topo} -G${topomod} -R${R} -I${res} -T
+gmt grdsample ${model} -G${modhi} -R${R} -I${res}
 gmt grdgradient ${topomod} -G${topogradmod}  -R${R} -A270/0/90 -Ne0.5
 #gmt grd2cpt ${model} -Cvik -Z -Sh -H > colmodsurf.cpt
 
@@ -80,7 +82,7 @@ EOF
 # Std
 model=../GMTdata/synthMarsNewLarger${str2}_std.grd
 modhi=../GMTdata/synthMarsNewLarger${str2}_std_hi.grd
-gmt grdsample ${model} -G${modhi} -R${R} -I0.1
+gmt grdsample ${model} -G${modhi} -R${R} -I${res}
 #gmt grdgradient ${topomod} -G${topogradmod}  -R${R} -A270/0/90 -Ne0.5
 gmt grd2cpt ${model} -Cinferno -Z
 gmt grdimage -X7.5c ${modhi} -I${topogradmod}  -R${R} -JG200/-69/${THshow}/7c -Bxa30g30 -Bya10g10 -BNSEW
@@ -96,8 +98,8 @@ EOF
 # modhi=../GMTdata/Cain_Br_hi.grd
 model=../GMTdata/Lang_Br.grd
 modhi=../GMTdata/Lang_Br_hi.grd
-gmt grdsample ${topo} -G${topomod} -R${R} -I0.1 -T
-gmt grdsample ${model} -G${modhi} -R${R} -I0.1
+gmt grdsample ${topo} -G${topomod} -R${R} -I${res} -T
+gmt grdsample ${model} -G${modhi} -R${R} -I${res}
 #gmt grdgradient ${topomod} -G${topogradmod}  -R${R} -A270/0/90 -Ne0.5
 #gmt grd2cpt ${model} -Cvik+h0 -Z -Sh -H > colmodsurf.cpt 
 gmt grdimage -Ccolmodsurf.cpt ${modhi} -I${topogradmod}  -R${R} -JG200/-69/${THshow}/7c -Bxa30g30 -Bya10g10 -BNSEW -X-7.5c -Y-7.5c
@@ -112,8 +114,10 @@ mod1=../GMTdata/synthMarsNewLarger${str2}_mean_hi.grd
 mod2=../GMTdata/Lang_Br_hi.grd
 CMdiff=../GMTdata/Lang_minus_synthMarsNewLarger${str2}_mean_hi.grd
 gmt grdmath ${mod2} ${mod1} SUB = ${CMdiff}
+diffhi=../GMTdata/Lang_minus_synthMarsNewLarger${str2}_mean_hi_res.grd
+gmt grdsample ${CMdiff} -G${diffhi} -R${R} -I${res}
 #gmt grd2cpt ${CMdiff} -Cvik -Z -Sh
-gmt grdimage -Ccolmodsurf.cpt ${CMdiff} -I${topogradmod}  -R${R} -JG200/-69/${THshow}/7c -Bxa30g30 -Bya10g10 -BNSEW -X7.5c
+gmt grdimage -Ccolmodsurf.cpt ${diffhi} -I${topogradmod}  -R${R} -JG200/-69/${THshow}/7c -Bxa30g30 -Bya10g10 -BNSEW -X7.5c
 gmt plot ../GMTdata/MarsRegion.txt -W${regionpen}
 gmt colorbar -DJCR+o0.5c/0c --FORMAT_FLOAT_MAP=%.0f -S+x"L134 minus mean model @[B_r@[ [nT]"
 gmt text -R0/1/0/1 -JX7c/7c --FONT=20 <<EOF
